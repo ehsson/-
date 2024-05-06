@@ -19,6 +19,7 @@ import torchvision
 import cv2
 import numpy as np
 import time
+import math
 
 
 import _init_paths
@@ -215,6 +216,13 @@ def parse_args():
     args.prevModelDir = ''
     return args
 
+def get_cosine(v1, v2):
+    """
+    Args:
+        v1: type은 list, 두 벡터 사이의 cosine 값을 얻기 위한 벡터
+        v2: type은 list, 두 벡터 사이의 cosine 값을 얻기 위한 벡터
+    """
+    return (v1[0]*v2[0] + v1[1]*v2[1])/((abs(math.sqrt(v1[0]**2 + v1[1]**2)))*(abs(math.sqrt(v2[0]**2 + v2[1]**2))))
 
 def main():
     # cudnn related setting
@@ -253,7 +261,11 @@ def main():
     else:
         print('please use --video or --webcam or --image to define the input.')
         return 
-
+    
+    count = 0 # 총 count 횟수
+    chk = False # count를 셀만한 정도로 움직였는지  check
+    pullup_threshold = math.cos(math.pi/2)
+    
     if args.webcam or args.video:
         if args.write:
             save_path = 'output.avi'
@@ -279,13 +291,35 @@ def main():
                         center, scale = box_to_center_scale(box, cfg.MODEL.IMAGE_SIZE[0], cfg.MODEL.IMAGE_SIZE[1])
                         image_pose = image.copy() if cfg.DATASET.COLOR_RGB else image_bgr.copy()
                         pose_preds = get_pose_estimation_prediction(pose_model, image_pose, center, scale)
-                        if len(pose_preds)>=1:
-                            for kpt in pose_preds:
-                                draw_pose(kpt,image_bgr) # draw the poses
+                        # 5: left_shoulder, 6: right_shoulder, 7: left_elbow, 8: right_elbow, 9: left_wrist, 10: right_wrist
+                        # 11: left_hip, 12: right_hip, 13: left_knee, 14: right_knee, 15: left_ankle, 16: right_ankle
+                        cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
+                        cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
+                        cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
+                        cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
+                        cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
+                        cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
+                        left_elbow_to_shoulder = [pose_preds[0][5][0] - pose_preds[0][7][0], pose_preds[0][5][1] - pose_preds[0][7][1]]
+                        right_elbow_to_shoulder = [pose_preds[0][6][0] - pose_preds[0][8][0], pose_preds[0][6][1] - pose_preds[0][8][1]]
+                        left_elbow_to_wrist = [pose_preds[0][9][0] - pose_preds[0][7][0], pose_preds[0][9][1] - pose_preds[0][7][1]]
+                        right_elbow_to_wrist = [pose_preds[0][10][0] - pose_preds[0][8][0], pose_preds[0][10][1] - pose_preds[0][8][1]]
+                        left_elbow_cos = get_cosine(left_elbow_to_shoulder, left_elbow_to_wrist)
+                        right_elbow_cos = get_cosine(right_elbow_to_shoulder, right_elbow_to_wrist)
+                        if chk is False:
+                            if left_elbow_cos >= pullup_threshold and right_elbow_cos >= pullup_threshold:
+                                chk = True
+                        else:
+                            if left_elbow_cos < pullup_threshold and right_elbow_cos < pullup_threshold:
+                                chk = False
+                                count += 1
+                        # if len(pose_preds)>=1:
+                        #     for kpt in pose_preds:
+                        #         draw_pose(kpt,image_bgr) # draw the poses
 
                 if args.showFps:
-                    fps = 1/(time.time()-last_time)
-                    img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+                    # fps = 1/(time.time()-last_time)
+                    # img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
+                    cv2.putText(image_bgr, 'count: %d'%(count), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
 
                 if args.write:
                     out.write(image_bgr)
