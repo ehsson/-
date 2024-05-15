@@ -205,7 +205,6 @@ python visualization/plot_coco.py \
 
 
 ### Citation
-If you use our code or models in your research, please cite with:
 ```
 @inproceedings{sun2019deep,
   title={Deep High-Resolution Representation Learning for Human Pose Estimation},
