@@ -1,4 +1,4 @@
-# Wrokout counter with HRNet 
+# Workout counter with HRNet 
 
 ## 웹캠을 이용한 demo 실행
 Remember to update` TEST.MODEL_FILE` in `demo/inference-config.yaml `according to your model path.
