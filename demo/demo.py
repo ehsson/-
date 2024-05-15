@@ -266,11 +266,11 @@ def main():
         print('please use --video or --webcam or --image to define the input.')
         return 
 
-    work_out = PUSH_UP
+    work_out = SQUAT
     count = 0 # 총 count 횟수
-    chk = 0 # count를 셀만한 정도로 움직였는지  check / 0: 준비X, 1: 운동 시작, 2: count를 셀만큼의 가동범위 동작
-    pushup_threshold1 = math.cos(math.pi*5/9) # 100도
-    pushup_threshold2 = math.cos(math.pi*2/3) # 120도
+    chk = 0 # count를 셀만한 정도로 움직였는지  check / 0: 준비X, 1: 운동 준비O, 2: count를 셀만큼의 가동범위 동작
+    pushup_threshold1 = math.cos(math.pi*2/3) # 120도
+    pushup_threshold2 = math.cos(math.pi*7/9) # 140도
     pullup_threshold1 = math.cos(math.pi/2) # 90도
     pullup_threshold2 = math.cos(math.pi*5/9) # 100도
     squat_threshold1 = math.cos(math.pi/2) # 90도
@@ -309,53 +309,59 @@ def main():
                         # 5: left_shoulder, 6: right_shoulder, 7: left_elbow, 8: right_elbow, 9: left_wrist, 10: right_wrist
                         # 11: left_hip, 12: right_hip, 13: left_knee, 14: right_knee, 15: left_ankle, 16: right_ankle
                         
-                        cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), 6, (CocoColors[11]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), 6, (CocoColors[12]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), 6, (CocoColors[13]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), 6, (CocoColors[14]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
-                        cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
-                        
                         if work_out == PUSH_UP:
-                            # # 어께, 팔꿈치, 손목 점 찍어주기
-                            # cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
                             
-                            # 팔꿈치->어께 벡터, 팔꿈치->손목 벡터 구하기
+                            # 엉덩이->발목, 엉덩이->어께 벡터 구하기
                             left_elbow_to_shoulder = [pose_preds[0][5][0] - pose_preds[0][7][0], pose_preds[0][5][1] - pose_preds[0][7][1]]
                             right_elbow_to_shoulder = [pose_preds[0][6][0] - pose_preds[0][8][0], pose_preds[0][6][1] - pose_preds[0][8][1]]
                             left_elbow_to_wrist = [pose_preds[0][9][0] - pose_preds[0][7][0], pose_preds[0][9][1] - pose_preds[0][7][1]]
                             right_elbow_to_wrist = [pose_preds[0][10][0] - pose_preds[0][8][0], pose_preds[0][10][1] - pose_preds[0][8][1]]
                             left_elbow_cos = get_cosine(left_elbow_to_shoulder, left_elbow_to_wrist)
                             right_elbow_cos = get_cosine(right_elbow_to_shoulder, right_elbow_to_wrist)
+                            left_hip_to_ankle = [pose_preds[0][15][0] - pose_preds[0][11][0], pose_preds[0][15][1] - pose_preds[0][11][1]]
+                            right_hip_to_ankle = [pose_preds[0][16][0] - pose_preds[0][12][0], pose_preds[0][16][1] - pose_preds[0][12][1]]
+                            left_direction_cos = get_cosine(right_hip_to_ankle, [-1, 0]) # 왼쪽을 보고 운동을 할 때 바닥과 몸의 각도 코사인 구하기
+                            right_direction_cos = get_cosine(left_hip_to_ankle, [1, 0]) # 오른쪽을 보고 운동을 할 때 바닥과 몸의 각도 코사인 구하기
+                            
+                            if pose_preds[0][0][0] > pose_preds[0][12][0]: # 코가 오른쪽 엉덩이 위치보다 왼쪽에 있으면 is_left = True
+                                is_left = True
+                                cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), 6, (CocoColors[12]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), 6, (CocoColors[14]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
+                            else:
+                                is_left = False
+                                cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), 6, (CocoColors[11]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), 6, (CocoColors[13]), -1)
+                                cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
                             
                             if chk == 0:
-                                pass
+                                if (is_left is True and left_direction_cos > math.cos(math.pi/3)) or (is_left is False and right_direction_cos > math.cos(math.pi/3)):
+                                    chk = 1
                             elif chk == 1:
-                                if left_elbow_cos >= pushup_threshold1 and right_elbow_cos >= pushup_threshold1: # 팔 각도가 100도보다 작아진다면 상태2로 변경
+                                if (is_left is True and right_elbow_cos > pushup_threshold1) or (is_left is False and left_elbow_cos > pushup_threshold1):
                                     chk = 2
+                                elif (is_left is True and left_direction_cos <= math.cos(math.pi/3)) or (is_left is False and right_direction_cos <= math.cos(math.pi/3)):
+                                    chk = 0
                             else:
-                                if left_elbow_cos < pushup_threshold2 and right_elbow_cos < pushup_threshold2: # 팔 각도가 120도보다 커진다면 count up
+                                if (is_left is True and right_elbow_cos <= pushup_threshold2) or (is_left is False and left_elbow_cos <= pushup_threshold2):
                                     chk = 1
                                     count += 1
+                                elif (is_left is True and left_direction_cos <= math.cos(math.pi/3)) or (is_left is False and right_direction_cos <= math.cos(math.pi/3)):
+                                    chk = 0
                         elif work_out == PULL_UP:
                             # # 어께, 팔꿈치, 손목 점 찍어주기
-                            # cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), 6, (CocoColors[6]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), 6, (CocoColors[7]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
                             
                             # 팔꿈치->어께 벡터, 팔꿈치->손목 벡터 구하기
                             left_elbow_to_shoulder = [pose_preds[0][5][0] - pose_preds[0][7][0], pose_preds[0][5][1] - pose_preds[0][7][1]]
@@ -366,27 +372,28 @@ def main():
                             right_elbow_cos = get_cosine(right_elbow_to_shoulder, right_elbow_to_wrist)
                             
                             if chk == 0:
-                                if (int(pose_preds[0][9][1]) < int(pose_preds[0][5][1])) and (int(pose_preds[0][10][1]) < int(pose_preds[0][6][1])): # 양 손목이 어께보다 위로 올라가면 준비된 동작으로 간주
+                                if ((pose_preds[0][9][1] < pose_preds[0][5][1]) and (pose_preds[0][10][1] < pose_preds[0][6][1])) and \
+                                    ((left_elbow_cos < math.cos(math.pi*2/3)) and (right_elbow_cos < math.cos(math.pi*2/3))): # 양 손목이 어께보다 위로 올라가고 양 팔꿈치 각도가 120도 이상이면 준비된 동작으로 간주
                                     chk = 1
                             elif chk == 1:
                                 if left_elbow_cos >= pullup_threshold1 and right_elbow_cos >= pullup_threshold1: # 팔 각도가 90도보다 작아진다면 상태2로 변경
                                     chk = 2
-                                elif (int(pose_preds[0][9][1]) >= int(pose_preds[0][5][1])) or (int(pose_preds[0][10][1]) >= int(pose_preds[0][6][1])):
+                                elif (pose_preds[0][9][1] >= pose_preds[0][5][1]) or (pose_preds[0][10][1] >= pose_preds[0][6][1]): # 양 손목중 하나라도 어께보다 아래에 있다면 운동 준비 동작에서 벗어난 것으로 간주
                                     chk = 0
                             else:
                                 if left_elbow_cos < pullup_threshold2 and right_elbow_cos < pullup_threshold2: # 팔 각도가 100도보다 커진다면 count up
                                     chk = 1
                                     count += 1
-                                elif (int(pose_preds[0][9][1]) >= int(pose_preds[0][5][1])) or (int(pose_preds[0][10][1]) >= int(pose_preds[0][6][1])):
+                                elif (pose_preds[0][9][1] >= pose_preds[0][5][1]) or (pose_preds[0][10][1] >= pose_preds[0][6][1]): # 양 손목중 하나라도 어께보다 아래에 있다면 운동 준비 동작에서 벗어난 것으로 간주
                                     chk = 0
                         elif work_out == SQUAT:
                             # # 엉덩이, 무릎, 발목 점 찍어주기
-                            # cv2.circle(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), 6, (CocoColors[11]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), 6, (CocoColors[12]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), 6, (CocoColors[13]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), 6, (CocoColors[14]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
-                            # cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), 6, (CocoColors[11]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), 6, (CocoColors[12]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), 6, (CocoColors[13]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), 6, (CocoColors[14]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
+                            cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
                             
                             # 무릎->엉덩이 벡터, 무릎->발목 벡터 구하기
                             left_knee_to_hip = [pose_preds[0][11][0] - pose_preds[0][13][0], pose_preds[0][11][1] - pose_preds[0][13][1]]
@@ -397,7 +404,7 @@ def main():
                             right_knee_cos = get_cosine(right_knee_to_hip, right_knee_to_ankle)
                             
                             if chk == 0:
-                                if (left_knee_cos < math.cos(math.pi*5/12)) and (right_knee_cos < math.cos(math.pi*5/12)): # 양 무릎의 각도가 150도 이상이면 준비완료된 동작으로 간주
+                                if (left_knee_cos < math.cos(math.pi*5/12)) and (right_knee_cos < math.cos(math.pi*5/12)): # 양 무릎의 각도가 150도 이상이면 준비된 동작으로 간주
                                     chk = 1
                             elif chk == 1:
                                 if left_knee_cos >= squat_threshold1 and right_knee_cos >= squat_threshold1: # 무릎 각도가 90도보다 작아진다면 상태2로 변경
@@ -414,7 +421,10 @@ def main():
                 if args.showFps:
                     # fps = 1/(time.time()-last_time)
                     # img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
-                    cv2.putText(image_bgr, 'count: %d'%(count), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
+                    if chk == 0 or (center[0] < vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 - vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0) or (center[0] > vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 + vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0):
+                        cv2.putText(image_bgr, 'Not Ready', (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
+                    else:
+                        cv2.putText(image_bgr, 'OK! count: %d'%(count), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
 
                 if args.write:
                     out.write(image_bgr)
