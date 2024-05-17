@@ -266,7 +266,7 @@ def main():
         print('please use --video or --webcam or --image to define the input.')
         return 
 
-    work_out = SQUAT
+    work_out = PULL_UP
     count = 0 # 총 count 횟수
     chk = 0 # count를 셀만한 정도로 움직였는지  check / 0: 준비X, 1: 운동 준비O, 2: count를 셀만큼의 가동범위 동작
     pushup_threshold1 = math.cos(math.pi*2/3) # 120도
@@ -303,7 +303,7 @@ def main():
                         pose_preds = get_pose_estimation_prediction(pose_model, image_pose, center, scale)
                         
                         # 중앙에 사람이 있지 않으면 예측하지 않음(다른 사람 중복 예측 방지)
-                        if (center[0] < vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 - vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0) or (center[0] > vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 + vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0):
+                        if (center[0] < vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 - vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/6.0) or (center[0] > vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 + vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/6.0):
                             continue
                         
                         # 5: left_shoulder, 6: right_shoulder, 7: left_elbow, 8: right_elbow, 9: left_wrist, 10: right_wrist
@@ -331,6 +331,12 @@ def main():
                                 cv2.circle(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), 6, (CocoColors[12]), -1)
                                 cv2.circle(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), 6, (CocoColors[14]), -1)
                                 cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
+                                
+                                cv2.line(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), CocoColors[6], 2)
                             else:
                                 is_left = False
                                 cv2.circle(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), 6, (CocoColors[5]), -1)
@@ -339,6 +345,12 @@ def main():
                                 cv2.circle(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), 6, (CocoColors[11]), -1)
                                 cv2.circle(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), 6, (CocoColors[13]), -1)
                                 cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
+                                
+                                cv2.line(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), CocoColors[6], 2)
+                                cv2.line(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), CocoColors[6], 2)
                             
                             if chk == 0:
                                 if (is_left is True and left_direction_cos > math.cos(math.pi/3)) or (is_left is False and right_direction_cos > math.cos(math.pi/3)):
@@ -362,6 +374,12 @@ def main():
                             cv2.circle(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), 6, (CocoColors[8]), -1)
                             cv2.circle(image_bgr, (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), 6, (CocoColors[9]), -1)
                             cv2.circle(image_bgr, (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), 6, (CocoColors[10]), -1)
+                            
+                            cv2.line(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][7][0]), int(pose_preds[0][7][1])), (int(pose_preds[0][9][0]), int(pose_preds[0][9][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][8][0]), int(pose_preds[0][8][1])), (int(pose_preds[0][10][0]), int(pose_preds[0][10][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][5][0]), int(pose_preds[0][5][1])), (int(pose_preds[0][6][0]), int(pose_preds[0][6][1])), CocoColors[6], 2)
                             
                             # 팔꿈치->어께 벡터, 팔꿈치->손목 벡터 구하기
                             left_elbow_to_shoulder = [pose_preds[0][5][0] - pose_preds[0][7][0], pose_preds[0][5][1] - pose_preds[0][7][1]]
@@ -395,6 +413,12 @@ def main():
                             cv2.circle(image_bgr, (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), 6, (CocoColors[15]), -1)
                             cv2.circle(image_bgr, (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), 6, (CocoColors[16]), -1)
                             
+                            cv2.line(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][13][0]), int(pose_preds[0][13][1])), (int(pose_preds[0][15][0]), int(pose_preds[0][15][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][14][0]), int(pose_preds[0][14][1])), (int(pose_preds[0][16][0]), int(pose_preds[0][16][1])), CocoColors[6], 2)
+                            cv2.line(image_bgr, (int(pose_preds[0][11][0]), int(pose_preds[0][11][1])), (int(pose_preds[0][12][0]), int(pose_preds[0][12][1])), CocoColors[6], 2)
+                            
                             # 무릎->엉덩이 벡터, 무릎->발목 벡터 구하기
                             left_knee_to_hip = [pose_preds[0][11][0] - pose_preds[0][13][0], pose_preds[0][11][1] - pose_preds[0][13][1]]
                             right_knee_to_hip = [pose_preds[0][12][0] - pose_preds[0][14][0], pose_preds[0][12][1] - pose_preds[0][14][1]]
@@ -421,7 +445,7 @@ def main():
                 if args.showFps:
                     # fps = 1/(time.time()-last_time)
                     # img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
-                    if chk == 0 or (center[0] < vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 - vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0) or (center[0] > vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 + vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/8.0):
+                    if chk == 0 or (center[0] < vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 - vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/6.0) or (center[0] > vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/2.0 + vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)/6.0):
                         cv2.putText(image_bgr, 'Not Ready', (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
                     else:
                         cv2.putText(image_bgr, 'OK! count: %d'%(count), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
